@@ -1,22 +1,23 @@
 <template>
-	<v-img width="1920px" :aspect-ratio="16/9" src="../../public/static/images/dk3.jpg">
+	<v-img width="1920px" :aspect-ratio="16/9" :src="background">
 		<v-row justify="center">
-			<v-card tile width="800px" height="600px" style="opacity: 0.9;margin-top: 60px;">
+			<v-card tile width="800px" height="600px" style="opacity: 0.9;margin-top: 60px;overflow-y: auto;">
 				<v-list two-line>
 					<template v-for="(item, index) in items" >
 						<v-list-item @click="read(index)">
-				        <v-list-item-avatar>
-							<v-img src="../../public/static/images/lynx.jpg"></v-img>
-				        </v-list-item-avatar>
 						
 				        <v-list-item-content>
-							<v-list-item-title v-if="item.state==false"><v-sheet class="black--text">{{item.text}}</v-sheet></v-list-item-title>
-							<v-list-item-title v-if="item.state==true"><v-sheet class="grey--text">{{item.text}}</v-sheet></v-list-item-title>
+							<v-list-item-title v-if="item.unread==0">
+								<v-sheet class="black--text">{{item.type}}{{item.title}}收到了{{item.username}}的{{item.type1}}</v-sheet>
+							</v-list-item-title>
+							<v-list-item-title v-if="item.unread==1">
+								<v-sheet class="grey--text">{{item.type}}{{item.title}}收到了{{item.username}}的{{item.type1}}</v-sheet>
+							</v-list-item-title>
 							<v-list-item-subtitle v-text="item.date"></v-list-item-subtitle>
 				        </v-list-item-content>
 				
 				        <v-list-item-action>
-							<v-btn icon :key="index" :content="item" :index="index" @click="deletes"><v-icon color="grey">mdi-close</v-icon></v-btn>
+							<v-btn icon :key="index" :content="item" :index="index" @click="deletes(index)"><v-icon color="grey">mdi-close</v-icon></v-btn>
 				        </v-list-item-action>
 						
 						</v-list-item>
@@ -25,6 +26,8 @@
 				</v-list>
 			</v-card>
 		</v-row>
+		<v-snackbar top color="success" v-model="snackbar1" class="mt-12">删除成功
+			<v-btn dark text @click="snackbar1 = false">关闭</v-btn></v-snackbar>
 	</v-img>
 </template>
 
@@ -33,25 +36,31 @@
 		name: 'App',
 		data(){
 			return{
-				items:[
-						{text:'sp在魂学研究上评论了你',date:'2020/04/01 08:00',state:false},
-						{text:'球球给你发了新留言',date:'2020/04/01 08:00',state:false},
-						{text:'鹦鹉在xx帖子上回复了你',date:'2020/04/01 08:00',state:false},
-						{text:'蓝羽龙关注了你',date:'2020/04/01 08:00',state:false},
-						{text:'小塔为你的发表点赞',date:'2020/04/01 08:00',state:false}
-					]
+				background:null,snackbar1:false,
+				items:[]
 			}
+		},
+		created() {
+			if(localStorage.getItem("id")!=null){
+				this.background=localStorage.getItem("background");
+			}
+			this.$axios.get('api/getmessagelist/'+localStorage.getItem("id")).then((res)=>{
+				  this.items=res.data;
+			});
 		},
 		methods:{
 			read:function(index){
-				this.items[index].state=true;
+				this.$axios.get('api/readmessage/'+this.items[index].id).then((res)=>{
+					this.items[index].unread=1;
+				});
 			},
-			deletes: function(index) {
-				//alert(index);
-				this.items.splice(index, 1);
-				// if(this.items[index++].state==false){
-				// 	this.items[index].state=false;
-				// }
+			deletes:function(index) {
+				this.$axios.get('api/deletemessage/'+this.items[index].id).then((res)=>{
+					if(res.data==true){
+						this.items.splice(index, 1);
+						this.snackbar1=true;
+					}
+				});
 			}
 		}
 	}

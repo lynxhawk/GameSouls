@@ -1,11 +1,13 @@
 <template>
-	<v-img width="1920px" :aspect-ratio="16/9" src="../../../public/static/images/dk3.jpg">
+	<v-img width="1920px" :aspect-ratio="16/9" :src="background">
 	<v-container>
-		<v-data-table :headers="headers" :items="users" sort-by="name" class="elevation-1" style="height: 500px;">
+		<v-data-table :search="search" :headers="headers" :items="users" sort-by="name" class="elevation-1 mx-auto mt-12" style="height: 600px; width: 800px;">
 		    <template v-slot:top>
-			    <v-toolbar flat color="white">
+			    <v-toolbar color="white" dense>
 			        <v-toolbar-title>权限管理</v-toolbar-title>
 			        <v-spacer></v-spacer>
+					<v-text-field v-model="search" prepend-icon="mdi-magnify" label="搜索"
+					    single-line hide-details clearable></v-text-field>
 			        <v-dialog v-model="dialog" max-width="500px">
 						<v-card>
 			            <v-card-title>
@@ -40,7 +42,7 @@
 	export default {
 	    data: () => ({
 	      dialog: false,powers:['2','3','4'],snackbar1:false,snackbar2:false,
-		  power:'',
+		  power:'',background:'',search:'',
 	      headers: [
 	        { text: '用户名', align: 'start', sortable: true, value: 'username'},
 	        { text: '用户权限', value: 'power' ,sortable:true},
@@ -58,6 +60,7 @@
 			this.$axios.get('api/getpower').then((res)=>{
 				  this.users=res.data;
 			});
+			this.background=localStorage.getItem("background");
 	    },
 	    methods: {
 	      editItem (item) {
@@ -92,7 +95,7 @@
 						this.users[this.editedIndex].power=this.power;
 					});
 				}else{
-					this.snackbar2=false;
+					this.snackbar2=true;
 				}
 			}
 	        this.close();

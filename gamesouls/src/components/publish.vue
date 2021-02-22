@@ -1,6 +1,6 @@
 <template>
-	<v-img width="1920px" :aspect-ratio="16/9" src="../../public/static/images/dk3.jpg">
-		<v-tabs style="margin-left:auto;margin-right:auto;width: 1000px;opacity: 0.8;" background-color="white" centered fixed-tabs>
+	<v-img width="1920px" :aspect-ratio="16/9" :src="background">
+		<v-tabs class="hidden-sm-and-down" style="margin-left:auto;margin-right:auto;width: 1000px;opacity: 0.8;" background-color="white" centered fixed-tabs>
 			<v-tabs-slider color="blue accent-4"></v-tabs-slider>
 			<v-tab><strong>资讯</strong></v-tab>
 			<v-tab><strong>文章</strong></v-tab>
@@ -10,103 +10,109 @@
 			<v-tab-item>
 			    <v-card height="730px">
 					<v-row class="px-12">
-					    <v-col v-for="n in 12" :key="n" md="3">
-							<template>
-						        <v-card color='white' height="200" width="200" raised @click="opennews">
-								<v-img height="100px" src="../../public/static/images/life2.jpg"></v-img>
-								<v-card-title class="subtitle-1">《奇异人生2》解锁新章节</v-card-title>
-								<v-card-subtitle class="pb-0">5小时前</v-card-subtitle>
+						<template v-for="(item, index) in item1s">
+							<v-col md="3">
+						        <v-card color='white' height="200" width="200" raised @click="opennews(index)">
+								<v-img height="100px" :src="item.cover"></v-img>
+								<v-card-title class="subtitle-1">{{item.title}}</v-card-title>
+								<v-card-subtitle class="pb-0">{{item.date}}</v-card-subtitle>
 								</v-card>
-							</template>
-						</v-col>
+							</v-col>
+						</template>
 					</v-row>
-					<v-pagination :length="20" v-model="page1" total-visible="8"></v-pagination>
+					<v-pagination :length="length1" v-model="page1" total-visible="8"></v-pagination>
 			    </v-card>
 			</v-tab-item>
 			<v-tab-item>
 				<v-card height="730px">
 				   	<v-row class="px-5">
-				   	    <v-col v-for="n in 12" :key="n" md="3">
-							<v-card color='white' height="200" width="300" raised @click="">
+						<template v-for="(item, index) in item2s">
+				   	    <v-col md="3">
+							<v-card color='white' height="200" width="300" raised @click="openarticle(index)">
 				   	       	<v-list-item>					   	       
 				   	       		<v-list-item-content>
-				   	       			<v-list-item-title class="title">魂学研究</v-list-item-title>
+				   	       			<v-list-item-title class="title">{{item.title}}</v-list-item-title>
 				   	       	    </v-list-item-content>
 				   	       	</v-list-item>
-				   	       	<v-img height="100px" src="../../public/static/images/dk3.jpg"></v-img>
-				   	       	<v-row justify="start" class="subtitle-2 pl-6 pt-2">2019/09/19
-				   	       	<v-icon small class="pl-4 pr-2">mdi-heart</v-icon>25
-				   	       	<v-icon small class="pl-2 pr-2">mdi-comment-multiple</v-icon>33
+				   	       	<v-img height="100px" :src="item.cover"></v-img>
+				   	       	<v-row justify="start" class="subtitle-2 pl-6 pt-2">{{item.date}}
+				   	       	<v-icon small class="pl-4 pr-2">mdi-heart</v-icon>{{item.heart}}
+				   	       	<v-icon small class="pl-2 pr-2">mdi-comment-multiple</v-icon>{{item.comment}}
 				   	       	</v-row>
 							</v-card>
 				   	    </v-col>
+						</template>
 				   	</v-row>
-				   	<v-pagination :length="20" v-model="page1" total-visible="8"></v-pagination>
+				   	<v-pagination :length="length2" v-model="page2" total-visible="8"></v-pagination>
 				</v-card>
 			</v-tab-item>
 			<v-tab-item>
 			    <v-card height="730px">
 			    	<v-row class="px-5">
-			    	    <v-col v-for="n in 12" :key="n" md="3">
-							<v-card @click="" height="200px" width="230px" raised>
-								<v-img max-height="110px" :aspect-ratio="16/9" src="../../public/static/images/ori.jpg"></v-img>
+						<template v-for="(item, index) in item3s">
+			    	    <v-col md="3">
+							<v-card @click="openreview(index)" height="200px" width="230px" raised>
+								<v-img max-height="110px" :aspect-ratio="16/9" :src="item.cover"></v-img>
 									<v-row class="ml-2 mr-2 mt-2" style="overflow: hidden;">
 										<v-sheet height="50px">
-											<strong>ori and blind forest</strong>
+											<strong>{{item.game}}</strong>
 										</v-sheet>
 									</v-row>
 									<v-row justify="center">
-										<v-rating readonly v-model="rating" background-color="orange lighten-3"
+										<v-rating readonly v-model="item.rate" background-color="orange lighten-3"
 									    color="yellow accent-4" dense half-increments hover size="25"></v-rating>
 									</v-row>
 							</v-card>
 				    	</v-col>
+						</template>
 				    </v-row>
-				    <v-pagination :length="20" v-model="page1" total-visible="8"></v-pagination>
+				    <v-pagination :length="length3" v-model="page3" total-visible="8"></v-pagination>
 				</v-card>
 			</v-tab-item>
 			<v-tab-item>
 				<v-card height="730px" style="margin-left: auto;margin-right: auto;">
 				   	<v-row class="px-5">
-				   	    <v-col v-for="n in 12" :key="n" md="3">
-				   	        <v-card color='white' height="200" width="280" raised @click="">
-				   	        	<v-img height="110px" src="../../public/static/images/acs.jpg"></v-img>
+						<template v-for="(item, index) in item4s">
+				   	    <v-col md="3">
+				   	        <v-card color='white' height="200" width="280" raised @click="openwalk(index)">
+				   	        	<v-img height="110px" :src="item.cover"></v-img>
 									<v-list-item>
 				   	        			<v-list-item-content>
-											<v-row style="overflow: hidden;" class="px-3">刺客信条枭雄</v-row>
+											<v-row style="overflow: hidden;" class="px-3">{{item.title}}</v-row>
 				   	        				<v-list-item-subtitle>
 				   	        				<v-row justify="end" class="pt-3"><v-icon small class="pr-3">mdi-heart</v-icon>
-				   	        				<v-sheet class="pr-3">25</v-sheet>
+				   	        				<v-sheet class="pr-3">{{item.heart}}</v-sheet>
 				   	        				<v-icon small class="pr-3">mdi-comment-multiple</v-icon>
-				   	        				<v-sheet class="pr-3">33</v-sheet></v-row>
+				   	        				<v-sheet class="pr-3">{{item.comment}}</v-sheet></v-row>
 				   	        				</v-list-item-subtitle>
 				   	        			</v-list-item-content>						
 									</v-list-item>
 				   	        </v-card>
 				   	    </v-col>
+						</template>
 				   	</v-row>
-				   	<v-pagination :length="20" v-model="page1" total-visible="8"></v-pagination>
+				   	<v-pagination :length="length4" v-model="page4" total-visible="8"></v-pagination>
 			   </v-card>
 			</v-tab-item>
 			<v-tab-item>
 				<v-card height="730px">
 			   	<v-row class="px-5">
-					<template v-for="(item1, index) in item1s">
+					<template v-for="(item, index) in item5s">
 					<v-col md="4">
-						<v-card height="200px" class="mx-auto" color="white" max-width="400" shaped raised>
+						<v-card height="200px" class="mx-auto" color="white" max-width="400" shaped raised @click="opendiscuss(index)">
 						    <v-card-title style="overflow: hidden;">
-								<v-sheet height="45px" class="subtitle-1 font-weight-bold">{{item1.title}}</v-sheet>
+								<v-sheet height="45px" class="subtitle-1 font-weight-bold">{{item.title}}</v-sheet>
 						    </v-card-title>
 							<v-divider></v-divider>
 						    <v-card-text style="overflow: hidden;" class="subtitle-2 font-weight">
-							<v-sheet height="45px">{{item1.subtitle}}</v-sheet></v-card-text>
+							<v-sheet height="45px">{{item.text}}</v-sheet></v-card-text>
 						
 						    <v-card-actions>
 								<v-list-item class="grow">
 						        <v-row align="center" justify="end">
-									<span class="subtitle-2 mr-4">{{item1.time}}</span>
+									<span class="subtitle-2 mr-4">{{item.date}}</span>
 									<v-icon class="mr-2">mdi-comment-text-multiple</v-icon>
-									<span class="subtitle-2 mr-2">256</span>
+									<span class="subtitle-2 mr-2">{{item.comment}}</span>
 						        </v-row>
 								</v-list-item>
 						    </v-card-actions>
@@ -114,7 +120,134 @@
 					</v-col>
 					</template>
 				</v-row>
-				<v-pagination :length="20" v-model="page5" total-visible="8"></v-pagination>
+				<v-pagination :length="length5" v-model="page5" total-visible="8"></v-pagination>
+				</v-card>
+			</v-tab-item>
+		</v-tabs>
+		
+		<v-tabs class="hidden-md-and-up" style="margin-left:auto;margin-right:auto;width: auto;opacity: 0.8;" background-color="white" centered show-arrows>
+			<v-tabs-slider color="blue accent-4"></v-tabs-slider>
+			<v-tab><strong>资讯</strong></v-tab>
+			<v-tab><strong>文章</strong></v-tab>
+			<v-tab><strong>评测</strong></v-tab>
+			<v-tab><strong>攻略</strong></v-tab>
+			<v-tab><strong>论坛</strong></v-tab>
+			<v-tab-item>
+			    <v-card height="1350px">
+					<v-row class="px-3">
+						<template v-for="(item, index) in item1s">
+							<v-col md="4">
+						        <v-card color='white' height="190" width="180" raised @click="opennews(index)">
+								<v-img height="90px" :src="item.cover"></v-img>
+								<v-sheet class="subtitle-1 px-3 pt-2" height="60" style="overflow:auto;">
+									{{item.title}}
+								</v-sheet>
+								<v-card-subtitle>{{item.date}}</v-card-subtitle>
+								</v-card>
+							</v-col>
+						</template>
+					</v-row>
+					<v-pagination :length="length1" v-model="page1" total-visible="8"></v-pagination>
+			    </v-card>
+			</v-tab-item>
+			<v-tab-item>
+				<v-card height="1350px">
+				   	<v-row class="px-3">
+						<template v-for="(item, index) in item2s">
+				   	    <v-col md="3">
+							<v-card color='white' height="190" width="180" raised @click="openarticle(index)">
+				   	       	<v-list-item>
+				   	       		<v-list-item-content>
+				   	       			<v-list-item-title class="title">{{item.title}}</v-list-item-title>
+				   	       	    </v-list-item-content>
+				   	       	</v-list-item>
+				   	       	<v-img height="100px" :src="item.cover"></v-img>
+				   	       	<v-row justify="start" class="subtitle-2 pl-6 pt-2">{{item.date}}
+				   	       	<v-icon small class="pl-4 pr-2">mdi-heart</v-icon>{{item.heart}}
+				   	       	<v-icon small class="pl-2 pr-2">mdi-comment-multiple</v-icon>{{item.comment}}
+				   	       	</v-row>
+							</v-card>
+				   	    </v-col>
+						</template>
+				   	</v-row>
+				   	<v-pagination :length="length2" v-model="page2" total-visible="8"></v-pagination>
+				</v-card>
+			</v-tab-item>
+			<v-tab-item>
+			    <v-card height="1350px">
+			    	<v-row class="px-3">
+						<template v-for="(item, index) in item3s">
+			    	    <v-col md="3">
+							<v-card @click="openreview(index)" height="190px" width="180px" raised>
+								<v-img max-height="110px" :aspect-ratio="16/9" :src="item.cover"></v-img>
+									<v-row class="ml-2 mr-2 mt-2" style="overflow: hidden;">
+										<v-sheet height="50px">
+											<strong>{{item.game}}</strong>
+										</v-sheet>
+									</v-row>
+									<v-row justify="center">
+										<v-rating readonly v-model="item.rate" background-color="orange lighten-3"
+									    color="yellow accent-4" dense half-increments hover size="25"></v-rating>
+									</v-row>
+							</v-card>
+				    	</v-col>
+						</template>
+				    </v-row>
+				    <v-pagination :length="length3" v-model="page3" total-visible="8"></v-pagination>
+				</v-card>
+			</v-tab-item>
+			<v-tab-item>
+				<v-card height="1350px" style="margin-left: auto;margin-right: auto;">
+				   	<v-row class="px-2">
+						<template v-for="(item, index) in item4s">
+				   	    <v-col md="3">
+				   	        <v-card color='white' height="180" width="185" raised @click="openwalk(index)">
+				   	        	<v-img height="100px" :src="item.cover"></v-img>
+									<v-list-item>
+				   	        			<v-list-item-content>
+											<v-row style="overflow: hidden;" class="px-3">{{item.title}}</v-row>
+				   	        				<v-list-item-subtitle>
+				   	        				<v-row justify="end" class="pt-3"><v-icon small class="pr-3">mdi-heart</v-icon>
+				   	        				<v-sheet class="pr-3">{{item.heart}}</v-sheet>
+				   	        				<v-icon small class="pr-3">mdi-comment-multiple</v-icon>
+				   	        				<v-sheet class="pr-3">{{item.comment}}</v-sheet></v-row>
+				   	        				</v-list-item-subtitle>
+				   	        			</v-list-item-content>						
+									</v-list-item>
+				   	        </v-card>
+				   	    </v-col>
+						</template>
+				   	</v-row>
+				   	<v-pagination :length="length4" v-model="page4" total-visible="8"></v-pagination>
+			   </v-card>
+			</v-tab-item>
+			<v-tab-item>
+				<v-card height="1350px">
+			   	<v-row class="px-3">
+					<template v-for="(item, index) in item5s">
+					<v-col md="2">
+						<v-card height="200px" class="mx-auto" color="white" width="180" shaped raised @click="opendiscuss(index)">
+						    <v-card-title style="overflow: hidden;">
+								<v-sheet height="45px" class="subtitle-1 font-weight-bold">{{item.title}}</v-sheet>
+						    </v-card-title>
+							<v-divider></v-divider>
+						    <v-card-text style="overflow: hidden;" class="subtitle-2 font-weight">
+							<v-sheet height="45px">{{item.text}}</v-sheet></v-card-text>
+
+						    <v-card-actions>
+								<v-list-item class="grow">
+						        <v-row align="center" justify="end">
+									<span class="subtitle-2 mr-4">{{item.date}}</span>
+									<v-icon class="mr-2">mdi-comment-text-multiple</v-icon>
+									<span class="subtitle-2 mr-2">{{item.comment}}</span>
+						        </v-row>
+								</v-list-item>
+						    </v-card-actions>
+						</v-card>
+					</v-col>
+					</template>
+				</v-row>
+				<v-pagination :length="length5" v-model="page5" total-visible="8"></v-pagination>
 				</v-card>
 			</v-tab-item>
 		</v-tabs>
@@ -126,60 +259,90 @@ export default {
 		name: 'App',
 		data() {
 			return {
-				rating:5,
+				background:null,
+				length1:null,length2:null,length3:null,length4:null,length5:null,
+				item1s:[],item2s:[],item3s:[],item4s:[],item5s:[],
 				page1:1,page2:1,page3:1,page4:1,page5:1,
-				item1s:	[
-						{
-							title:'"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
-							subtitle: "I'll be in your neighborhood doing errands this weekend. Do you want to hang out?I'll be in your neighborhood doing errands this weekend. Do you want to hang out?I'll be in your neighborhood doing errands this weekend. Do you want to hang out?I'll be in your neighborhood doing errands this weekend. Do you want to hang out?",
-							time:'2020-01-22',
-						},
-						{
-						  title:'"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
-						  subtitle: "Wish I could come, but I'm out of town this weekend.",
-						  time:'2020-01-22'
-						},				   
-						{
-						  title:'"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
-						  subtitle: "Do you have Paris recommendations? Have you ever been?",
-						  time:'2020-01-22'
-						},				        
-						{
-						  title:'"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
-						  subtitle: "Have any ideas about what we should get Heidi for her birthday?",
-						  time:'2020-01-22'
-						},				       
-						{
-						  title:'"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
-						  subtitle: "We should eat this: Grate, Squash, Corn, and tomatillo Tacos.",
-						  time:'2020-01-22'
-						},
-						{
-						  title:'"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
-						  subtitle: "Do you have Paris recommendations? Have you ever been?",
-						  time:'2020-01-22'
-						},
-						{
-							title:'"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
-							subtitle: "I'll be in your neighborhood doing errands this weekend. Do you want to hang out?I'll be in your neighborhood doing errands this weekend. Do you want to hang out?I'll be in your neighborhood doing errands this weekend. Do you want to hang out?I'll be in your neighborhood doing errands this weekend. Do you want to hang out?",
-							time:'2020-01-22',
-						},
-						{
-						  title:'"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
-						  subtitle: "Wish I could come, but I'm out of town this weekend.",
-						  time:'2020-01-22'
-						},				   
-						{
-						  title:'"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
-						  subtitle: "Do you have Paris recommendations? Have you ever been?",
-						  time:'2020-01-22'
-						}
-				        ]
+				totalitem1s:[],totalitem2s:[],totalitem3s:[],totalitem4s:[],totalitem5s:[],
+			}
+		},
+		created() {
+			if(localStorage.getItem("background")!=null){
+				this.background=localStorage.getItem("background");
+			}
+			this.$axios.get('api/getusernewslist/'+localStorage.getItem("id")).then((response)=>{
+			    var a = response.data;
+				this.length1=Math.ceil(a.length/12);
+					for (let i = 0; i < this.length1; i++) {
+						this.totalitem1s[i] = a.slice(12 * i, 12 * (i + 1));
+					}
+				this.item1s = this.totalitem1s[this.page1-1];
+			});
+			this.$axios.get('api/getuserarticlelist/'+localStorage.getItem("id")).then((response)=>{
+			    var a = response.data;
+				this.length2=Math.ceil(a.length/12);
+					for (let i = 0; i < this.length2; i++) {
+						this.totalitem2s[i] = a.slice(12 * i, 12 * (i + 1));
+					}
+				this.item2s = this.totalitem2s[this.page2-1];
+			});
+			this.$axios.get('api/getuserreviewlist/'+localStorage.getItem("id")).then((response)=>{
+			    var a = response.data;
+				this.length3=Math.ceil(a.length/12);
+					for (let i = 0; i < this.length3; i++) {
+						this.totalitem3s[i] = a.slice(12 * i, 12 * (i + 1));
+					}
+				this.item3s = this.totalitem3s[this.page3-1];
+			});
+			this.$axios.get('api/getuserwalklist/'+localStorage.getItem("id")).then((response)=>{
+			    var a = response.data;
+				this.length4=Math.ceil(a.length/9);
+					for (let i = 0; i < this.length4; i++) {
+						this.totalitem4s[i] = a.slice(9 * i, 9 * (i + 1));
+					}
+				this.item4s = this.totalitem4s[this.page4-1];
+			});
+			this.$axios.get('api/getuserdiscusslist/'+localStorage.getItem("id")).then((response)=>{
+			    var a = response.data;
+				this.length5=Math.ceil(a.length/9);
+					for (let i = 0; i < this.length5; i++) {
+						this.totalitem5s[i] = a.slice(9 * i, 9 * (i + 1));
+					}
+				this.item5s = this.totalitem5s[this.page5-1];
+			});
+		},
+		watch:{
+			page1(val, oldVal){
+				this.item1s = this.totalitem1s[val-1];
+			},
+			page2(val, oldVal){
+				this.item2s = this.totalitem2s[val-1];
+			},
+			page3(val, oldVal){
+				this.item3s = this.totalitem3s[val-1];
+			},
+			page4(val, oldVal){
+				this.item4s = this.totalitem4s[val-1];
+			},
+			page5(val, oldVal){
+				this.item5s = this.totalitem5s[val-1];
 			}
 		},
 		methods:{
-			opennews:function(){
-				alert("!!!!");
+			opennews(index){
+				this.$router.push({path: '/readnews/' + this.item1s[index].id});
+			},
+			openarticle(index){
+				this.$router.push({path: '/readarticle/' + this.item2s[index].id});
+			},
+			openreview(index){
+				this.$router.push({path: '/readreview/' + this.item3s[index].id});
+			},
+			openwalk(index){
+				this.$router.push({path: '/readwalk/' + this.item4s[index].id});
+			},
+			opendiscuss(index){
+				this.$router.push({path: '/readdiscuss/' + this.item5s[index].id});
 			}
 		}
 }
