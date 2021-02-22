@@ -2,14 +2,14 @@
 	<v-app>		
 	<v-navigation-drawer v-model="drawer" fixed temporary>
 		<v-list class="pa-1" >
-			<v-list-item @click="dialog1=true">
+			<v-list-item @click="opendialog">
 			<v-list-item-avatar>
-				<v-icon v-if="avatar==''" x-large>mdi-account-circle</v-icon>
-				<v-icon v-else :src="avatar"></v-icon>
+				<v-icon v-if="avatar==null" x-large>mdi-account-circle</v-icon>
+				<v-avatar v-else><v-img width="30" :src="avatar"></v-img></v-avatar>
 			</v-list-item-avatar>
 			<v-list-item-content>
 				<v-list-item-title>
-				<div v-if="nickname==''">未登录</div>
+				<div v-if="nickname==null">未登录</div>
 				<div v-else>{{nickname}}</div>
 				</v-list-item-title>
 			</v-list-item-content>
@@ -18,6 +18,14 @@
 
 		<v-list dense light>
 			<v-divider></v-divider>
+			<v-list-item v-if="power!=null">
+				<router-link :to="{ path: '/myspace/'+this.id }">
+				<v-btn text tile color="grey darken-2" height="45" width="230">
+					<v-row class="pl-4">
+						<v-icon class="pr-8">dashboard</v-icon>
+					<v-sheet class="pt-1">个人中心</v-sheet></v-row>
+				</v-btn></router-link>
+			</v-list-item>
 			<v-list-item v-for="item in items" :key="item.title" v-if="power!=null">
 				<router-link :to="{ path: '/'+item.path }">
 				<v-btn text tile color="grey darken-2" height="45" width="230">
@@ -65,7 +73,7 @@
 		</v-list>
 		
 		<template v-slot:append>
-			<div class="pa-2" v-if="nickname!=''">
+			<div class="pa-2" v-if="nickname!=null">
 				<v-btn block tile text @click="logout">退出登录</v-btn>
 			</div>
 	    </template>
@@ -74,7 +82,7 @@
     <v-app-bar color="white" elevation-4 app dense>
 		
 		<v-toolbar-title class="headline">
-        <span>GameSouls</span>
+        GameSouls
 		</v-toolbar-title>
         <v-spacer></v-spacer>
 			<v-toolbar-items class="hidden-sm-and-down">
@@ -89,7 +97,8 @@
 			</v-toolbar-items>
 			<v-badge :content="messages" :value="messages" color="blue accent-2" overlap bottom offset-y="20" offset-x="50" left>
 				<v-btn icon large @click.stop="drawer = !drawer">
-				    <v-icon large>mdi-account-circle</v-icon>   
+				    <v-icon v-if="avatar==null" large>mdi-account-circle</v-icon>
+					<v-avatar v-else size="36"><v-img :src="avatar"></v-img></v-avatar>
 				</v-btn>
 			</v-badge>
 			<v-menu class="hidden-md-and-up">
@@ -134,9 +143,9 @@
 				<v-card-text>
 					<v-row class="px-5"><v-text-field v-model="username" label="用户名" hint="昵称" clearable :rules="[rules.required]"></v-text-field></v-row>
 					<v-row class="px-5"><v-text-field v-model="password" label="密码" clearable
-					:append-icon="show3 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, rules.min,rules.max]"
+					:append-icon="show3 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required]"
 					:type="show3 ? 'text' : 'password'" @click:append="show3 = !show3"></v-text-field>
-					<v-checkbox v-model="checkbox" label="记住密码"></v-checkbox>
+					<!--<v-checkbox v-model="checkbox" label="记住密码"></v-checkbox>-->
 					</v-row>
 					<v-row justify="end"><v-btn text @click="dialog3 = true">
 					<small>忘记密码?</small></v-btn></v-row>
@@ -161,14 +170,14 @@
 				</v-card-title>
 				<v-divider></v-divider>
 				<v-card-text>
-					<v-row class="px-5"><v-text-field label="昵称" hint="长度在1~20之间" :rules="[rules.required,rules.max]"
-					clearable counter="20"></v-text-field></v-row>
-					<v-row class="px-5"><v-text-field label="邮箱" clearable :rules="[rules.required]"></v-text-field></v-row>
+					<v-row class="px-5"><v-text-field label="昵称" hint="长度在1~20之间" :rules="[rules.required]"
+					clearable counter="20" v-model="username1"></v-text-field></v-row>
+					<v-row class="px-5"><v-text-field v-model="email1" label="邮箱" clearable :rules="[rules.required]"></v-text-field></v-row>
 					<v-row class="px-5"><v-text-field  v-model="password1" label="密码" hint="长度在6~20之间" counter="20" 
-					:append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required,rules.max,rules.min]"
+					:append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required]"
 					:type="show1 ? 'text' : 'password'" @click:append="show1 = !show1"></v-text-field></v-row>
 					<v-row class="px-5"><v-text-field v-model="password2" label="重复输入密码" hint="长度在6~20之间" 
-					counter="20" :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required,rules.max,rules.min]"
+					counter="20" :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required]"
 					:type="show2 ? 'text' : 'password'" @click:append="show2 = !show2"></v-text-field>
 					</v-row>
 				</v-card-text>
@@ -195,7 +204,7 @@
 					<v-btn text class="primary mt-2 ml-2" @click="send">发送验证码</v-btn></v-row>
 					<v-row class="px-5"><v-text-field label="验证码" clearable :rules="[rules.required]"></v-text-field></v-row>
 					<v-row class="px-5"><v-text-field label="新密码" clearable
-					:append-icon="show4 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, rules.min]"
+					:append-icon="show4 ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required]"
 					:type="show4 ? 'text' : 'password'" @click:append="show4 = !show4"></v-text-field>
 					</v-row>
 				</v-card-text>
@@ -247,17 +256,18 @@ export default {
 	name: 'App',
 	data() {
 		return {
-			btnFlag:false,power:'1',
+			btnFlag:false,power:null,id:null,length:0,
 			dialog1:false,dialog2:false,dialog3:false,
 			show1:false,show2:false,show3:false,show4:false,
-			nickname:'',avatar:'',
-			username:'',password:'',
+			nickname:null,avatar:null,
+			username:null,password:null,
 			drawer:null,checkbox:false,
+			username1:null,email1:null,
 			password1:null,password2:null,
 			snackbar1:false,snackbar2:false,snackbar3:false,snackbar4:false,snackbar5:false,snackbar6:false,
-			messages:1,
+			messages:null,
 			items: [
-				{ icon: 'dashboard', title: '个人中心', path:'myspace'},		
+				//{ icon: 'dashboard', title: '个人中心', path:'myspace'+'/'+this.id},
 				{ icon: 'mdi-bell', title: '消息提醒' , path:'message'},
 				{ icon: 'mdi-package',title: '我的发表', path:'publish'},
 				{ icon: 'mdi-heart', title: '我的关注', path:'follow' },
@@ -268,23 +278,26 @@ export default {
 				],
 			icons: ['mdi-qqchat','mdi-twitter','mdi-github-circle','mdi-steam','mdi-email'],
 			rules: {
-			required: value => !!value || '不能为空',
-			min: value => value.length >= 1 || '长度不能小于1',
-			max: value => value.length <=20 || '长度不能大于20'
+			required: value => !!value || '不能为空'
 			}
 		}
     },
 	created() {
-		this.power=localStorage.getItem("power");
 		if(localStorage.getItem("username")!=null){
 			this.nickname=localStorage.getItem("username");
+			this.power=localStorage.getItem("power");
+			this.avatar=localStorage.getItem("avatar");
+			this.id=localStorage.getItem("id");
+			this.$axios.get('http://localhost:8888/getunread/'+localStorage.getItem("id")).then((response)=>{
+				this.messages=response.data;
+			});
 		}
 	},
 	mounted () {
 		window.addEventListener('scroll', this.scrollToTop);
-		window.addEventListener('storage', function (e) {
-		    localStorage.setItem(e.key, e.oldValue);
-		});
+		// window.addEventListener('storage', function (e) {
+		//     localStorage.setItem(e.key, e.oldValue);
+		// });
 		// var x = document.createElement('div');
 		//   Object.defineProperty(x, 'id', {
 		//       get:function(){
@@ -299,8 +312,13 @@ export default {
 		window.removeEventListener('scroll', this.scrollToTop)
 	},
 	methods: {
+		opendialog(){
+			if(localStorage.getItem("id")==null){
+				this.dialog1=true;
+			}
+		},
 		login(){
-			this.$axios.get('api/login',{
+			this.$axios.get('http://localhost:8888/login',{
 			        params:{
 			            username:this.username,
 						password:this.password
@@ -311,24 +329,19 @@ export default {
 						console.log("success");
 						this.snackbar2=true;
 						this.dialog1=false;
-						this.$axios.get('api/getuserinfo/'+this.username).then((res)=>{
-							var avatar = res.data[0].avatar;
-						//	let reader = new FileReader();
-						//	reader.readAsDataURL(avatar);
-						//	this.avatar=reader.result;
+						this.$axios.get('http://localhost:8888/getuserinfo/'+this.username).then((res)=>{
 							localStorage.setItem("id",res.data[0].id);
 							localStorage.setItem("username",res.data[0].username);
-							localStorage.setItem("avatar",avatar);
+							localStorage.setItem("avatar",res.data[0].avatar);
+							localStorage.setItem("background",res.data[0].background);
 							localStorage.setItem("power",res.data[0].power);
-							localStorage.setItem("heart",res.data[0].heart);
-							localStorage.setItem("exp",res.data[0].exp);
-							localStorage.setItem("gametype",res.data[0].gametype);
-							localStorage.setItem("introduce",res.data[0].introduce);
-							localStorage.setItem("follow",res.data[0].follow);
-							localStorage.setItem("follower",res.data[0].follower);
-							localStorage.setItem("publish",res.data[0].publish);
 							this.power=localStorage.getItem("power");
 							this.nickname=localStorage.getItem("username");
+							this.avatar=localStorage.getItem("avatar");
+							this.id=localStorage.getItem("id");
+							this.$axios.get('http://localhost:8888/getunread/'+localStorage.getItem("id")).then((response)=>{
+								this.messages=response.data;
+							});
 						})
 					}
 			    }).catch((error)=>{
@@ -338,8 +351,21 @@ export default {
 		},
 		signin(){
 			if(this.password1==this.password2){
-				this.dialog2=false;
-				this.snackbar1=true;
+				this.$axios.get('http://localhost:8888/signin',{
+				        params:{
+				            username:this.username1,
+							email:this.email1,
+							password:this.password1
+				        }
+				    }).then((response)=>{
+						var a = response.data;
+						if(a==true){
+							this.dialog2=false;
+							this.snackbar1=true;
+						}else{
+							this.snackbar3=false;
+						}
+					})
 			}
 			else{
 				this.snackbar3=true;
@@ -348,8 +374,11 @@ export default {
 		logout(){
 			localStorage.clear();
 			this.username=null;
-			this.nickname='';
+			this.nickname=null;
 			this.power=null;
+			this.avatar=null;
+			this.messages=null;
+			this.$router.push({ path: '/'});
 		},
 		send(){
 			this.snackbar5=true;
