@@ -12,6 +12,7 @@
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
+    "vue-clipboard2": "^0.3.1",
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.1.6",
     "vuelidate": "^0.7.5",
